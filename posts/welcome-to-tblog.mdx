@@ -1,0 +1,73 @@
+---
+title: "欢迎来到TBlog - 现代化博客系统"
+excerpt: "这是一个基于Next.js 15、React、TypeScript、Tailwind CSS、Prisma和PostgreSQL构建的现代化博客系统。支持MDX格式的文章，具有优雅的UI设计和良好的用户体验。"
+date: "2024-01-15"
+slug: "welcome-to-tblog"
+published: true
+---
+
+# 欢迎来到TBlog
+
+欢迎使用TBlog，一个基于最新技术栈构建的现代化博客平台！
+
+## 技术特性
+
+TBlog 采用了以下先进技术：
+
+- **Next.js 15**: 最新的React框架，提供卓越的性能和开发体验
+- **TypeScript**: 类型安全的JavaScript，让代码更加可靠
+- **Tailwind CSS**: 实用优先的CSS框架，快速构建美观界面
+- **Prisma**: 现代化的数据库ORM，简化数据库操作
+- **PostgreSQL**: 强大的关系型数据库
+- **MDX**: 支持在Markdown中使用React组件
+
+## 主要功能
+
+### 🎨 现代化设计
+采用简洁优雅的设计风格，提供优秀的用户体验。
+
+### 📱 响应式布局
+完美适配各种设备尺寸，无论是桌面还是移动设备。
+
+### 🔐 安全认证
+基于JWT的认证系统，保障数据安全。
+
+### 🐳 容器化部署
+支持Docker部署，简化生产环境配置。
+
+## 代码示例
+
+下面是一个简单的React组件示例：
+
+```tsx
+interface PostCardProps {
+  post: {
+    title: string;
+    excerpt: string;
+    date: string;
+  };
+}
+
+export default function PostCard({ post }: PostCardProps) {
+  return (
+    <article className="bg-white rounded-lg shadow-md p-6">
+      <h2 className="text-xl font-bold mb-2">{post.title}</h2>
+      <p className="text-gray-600 mb-4">{post.excerpt}</p>
+      <time className="text-sm text-gray-500">{post.date}</time>
+    </article>
+  );
+}
+```
+
+## 开始使用
+
+1. 克隆项目到本地
+2. 安装依赖：`npm install`
+3. 配置环境变量
+4. 启动开发服务器：`npm run dev`
+
+就是这么简单！开始你的博客之旅吧！
+
+---
+
+*感谢使用TBlog，如有问题请随时联系我们。* 

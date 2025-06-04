@@ -3,24 +3,293 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --muted: #1f2937;
+  --muted-foreground: #9ca3af;
+  --border: #374151;
+  --card: #111827;
+  --card-foreground: #ededed;
+  --primary: #3b82f6;
+  --primary-foreground: #ffffff;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* 全局样式过渡 */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 50ms;
+}
+
+html {
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Line clamp utilities */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Prose 样式 - 支持暗色主题 */
+.prose {
+  color: var(--foreground) !important;
+  max-width: none;
+}
+
+.prose p {
+  color: var(--foreground) !important;
+  line-height: 1.75 !important;
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
+}
+
+.prose h1 {
+  color: var(--foreground) !important;
+  font-weight: 700 !important;
+  font-size: 2.25em !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.8888889em !important;
+}
+
+.prose h2 {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  font-size: 1.5em !important;
+  margin-top: 2em !important;
+  margin-bottom: 1em !important;
+}
+
+.prose h3 {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  font-size: 1.25em !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.75em !important;
+}
+
+.prose h4 {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.prose strong {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+}
+
+.prose li {
+  color: var(--foreground) !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0.5em !important;
+}
+
+.prose ul li {
+  color: var(--foreground) !important;
+}
+
+.prose ol li {
+  color: var(--foreground) !important;
+}
+
+.prose blockquote {
+  color: var(--muted-foreground) !important;
+  border-left: 4px solid var(--border) !important;
+  padding-left: 1em !important;
+  font-style: italic !important;
+  background-color: var(--muted) !important;
+  padding: 1em !important;
+  border-radius: 0.5rem !important;
+  margin: 1.5em 0 !important;
+}
+
+.prose code {
+  color: var(--foreground) !important;
+  background-color: var(--muted) !important;
+  padding: 0.125rem 0.25rem !important;
+  border-radius: 0.25rem !important;
+  font-size: 0.875em !important;
+  font-weight: 500 !important;
+}
+
+.prose pre {
+  background-color: #1f2937 !important;
+  color: #f9fafb !important;
+  border-radius: 0.5rem !important;
+  padding: 1.25rem !important;
+  overflow-x: auto !important;
+  margin: 1.5em 0 !important;
+}
+
+.prose pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+  padding: 0 !important;
+  font-size: inherit !important;
+}
+
+.prose a {
+  color: var(--primary) !important;
+  text-decoration: underline !important;
+  font-weight: 500 !important;
+}
+
+.prose a:hover {
+  color: var(--primary) !important;
+  text-decoration: none !important;
+}
+
+.prose table {
+  margin-top: 2em !important;
+  margin-bottom: 2em !important;
+  border-collapse: collapse !important;
+  width: 100% !important;
+}
+
+.prose thead th {
+  color: var(--foreground) !important;
+  font-weight: 600 !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0.5em !important;
+}
+
+.prose tbody td {
+  color: var(--foreground) !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0.5em !important;
+}
+
+.prose img {
+  border-radius: 0.5rem !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+}
+
+.dark .prose img {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+/* 选中文本样式 */
+::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+/* 焦点样式 */
+.focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* 动画类 */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* 响应式文本 */
+@media (max-width: 640px) {
+  .prose {
+    font-size: 0.875rem;
+  }
+  
+  .prose h1 {
+    font-size: 1.875rem !important;
+  }
+  
+  .prose h2 {
+    font-size: 1.25rem !important;
+  }
+  
+  .prose h3 {
+    font-size: 1.125rem !important;
+  }
 }
