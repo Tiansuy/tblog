@@ -40,6 +40,44 @@ docker-compose up -d
 docker-compose ps
 ```
 
+## 数据库迁移
+
+1. 首次部署时：
+   数据库迁移会自动执行，无需额外操作。
+
+2. 更新项目时：
+   如果更新包含数据库变更，请按以下步骤操作：
+
+   a. 首先备份数据库：
+   ```bash
+   docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
+   ```
+
+   b. 拉取最新代码：
+   ```bash
+   git pull
+   ```
+
+   c. 执行数据库迁移：
+   ```bash
+   # 停止现有服务
+   docker-compose down
+
+   # 重新构建并启动服务（包含迁移）
+   docker-compose up -d --build
+   ```
+
+   d. 检查迁移日志：
+   ```bash
+   docker-compose logs migration
+   ```
+
+   如果迁移失败：
+   ```bash
+   # 还原数据库备份
+   cat backup_$(date +%Y%m%d).sql | docker exec -i tblog-postgres psql -U user -d tblog
+   ```
+
 ## 访问说明
 
 1. 直接通过服务器IP访问：
@@ -64,10 +102,14 @@ docker-compose logs
 docker-compose logs app
 docker-compose logs nginx
 docker-compose logs postgres
+docker-compose logs migration
 ```
 
 2. 更新应用：
 ```bash
+# 备份数据库
+docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
+
 # 拉取最新代码
 git pull
 
@@ -75,9 +117,10 @@ git pull
 docker-compose up -d --build
 ```
 
-3. 备份数据库：
+3. 数据库备份：
 ```bash
-docker exec tblog-postgres pg_dump -U user tblog > backup.sql
+# 创建带时间戳的备份
+docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
 ```
 
 ## 故障排除
@@ -92,11 +135,34 @@ docker exec tblog-postgres pg_dump -U user tblog > backup.sql
    - 检查数据库连接字符串是否正确
    - 检查数据库日志：`docker-compose logs postgres`
 
+3. 如果数据库迁移失败：
+   - 检查迁移日志：`docker-compose logs migration`
+   - 确保有最新的数据库备份
+   - 如需回滚，使用备份还原数据库
+
+4. 如果Docker构建失败：
+   a. 清理Docker缓存：
+   ```bash
+   docker system prune -a
+   docker volume prune
+   ```
+   
+   b. 重新构建：
+   ```bash
+   docker-compose build --no-cache
+   docker-compose up -d
+   ```
+   
+   c. 如果是webpack错误，检查：
+   - 确保所有依赖都已正确安装
+   - 检查是否有语法错误
+   - 查看构建日志获取详细错误信息
+
 ## 安全建议
 
 1. 定期更新系统和 Docker 镜像
 2. 使用强密码和安全的 JWT 密钥
-3. 定期备份数据库
+3. 定期备份数据库（建议每日备份）
 4. 监控服务器资源使用情况
 5. 配置防火墙只开放必要端口
 6. 建议尽快配置域名和SSL证书 

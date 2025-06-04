@@ -9,7 +9,8 @@ WORKDIR /app
 
 # Install dependencies based on the preferred package manager
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+# Install all dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -19,6 +20,14 @@ COPY . .
 
 # Set environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+
+# Build-time database URL (will be overridden at runtime)
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
+# Generate Prisma client
+RUN npx prisma generate
 
 # Build the application
 RUN npm run build
@@ -39,6 +48,11 @@ COPY --from=builder /app/public ./public
 # Set the correct permission for prerender cache
 RUN mkdir .next
 RUN chown nextjs:nodejs .next
+
+# Copy Prisma schema and generated client
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 
 # Automatically leverage output traces to reduce image size
 # https://nextjs.org/docs/advanced-features/output-file-tracing

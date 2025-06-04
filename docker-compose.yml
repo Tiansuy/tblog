@@ -29,6 +29,8 @@ services:
       dockerfile: Dockerfile
       args:
         - DATABASE_URL=postgresql://user:password@postgres:5432/tblog
+        - NODE_ENV=production
+        - NEXT_TELEMETRY_DISABLED=1
     container_name: tblog-app
     environment:
       - NODE_ENV=production
@@ -42,6 +44,25 @@ services:
       postgres:
         condition: service_healthy
     restart: unless-stopped
+
+  # Database Migration Service
+  migration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - DATABASE_URL=postgresql://user:password@postgres:5432/tblog
+        - NODE_ENV=production
+        - NEXT_TELEMETRY_DISABLED=1
+    container_name: tblog-migration
+    command: npx prisma migrate deploy
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5432/tblog
+    networks:
+      - tblog-network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   # Nginx Reverse Proxy
   nginx:
