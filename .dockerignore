@@ -13,7 +13,6 @@ README.md
 .git
 .gitignore
 yarn.lock
-package-lock.json
 .vercel
 .DS_Store
 coverage
