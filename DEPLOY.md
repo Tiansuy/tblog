@@ -1,8 +1,63 @@
 # TBlog 部署指南
 
-## 准备工作
+## 部署方式选择
 
-1. 确保服务器已安装以下软件：
+本项目支持两种部署方式：
+
+### 方式一：本地构建 + Docker Hub（推荐）
+适用于内存较小的服务器（如1G内存），在本地构建镜像后推送到Docker Hub。
+
+### 方式二：服务器直接构建
+适用于内存较大的服务器（建议4G+内存），直接在服务器上构建。
+
+---
+
+## 方式一：本地构建 + Docker Hub
+
+### 本地准备工作
+
+1. 确保本地已安装：
+   - Docker Desktop
+   - Git
+
+2. 注册 Docker Hub 账号：
+   - 访问 https://hub.docker.com
+   - 注册账号并创建仓库
+
+### 本地构建步骤
+
+1. 克隆项目：
+```bash
+git clone <your-repository-url>
+cd tblog
+```
+
+2. 修改构建脚本中的镜像名称：
+   - 编辑 `scripts/build-and-push.sh` (Linux/Mac)
+   - 编辑 `scripts/build-and-push.bat` (Windows)
+   - 将 `your-dockerhub-username` 替换为你的Docker Hub用户名
+
+3. 登录Docker Hub：
+```bash
+docker login
+```
+
+4. 构建并推送镜像：
+
+**Linux/Mac:**
+```bash
+chmod +x scripts/build-and-push.sh
+./scripts/build-and-push.sh v1.0.0
+```
+
+**Windows:**
+```bash
+scripts/build-and-push.bat v1.0.0
+```
+
+### 服务器部署步骤
+
+1. 确保服务器已安装：
    - Docker (20.10.0+)
    - Docker Compose (2.0.0+)
    - Git
@@ -13,7 +68,41 @@ git clone <your-repository-url>
 cd tblog
 ```
 
-## 配置说明
+3. 修改生产配置：
+   - 编辑 `docker-compose.prod.yml`
+   - 将 `your-dockerhub-username` 替换为你的Docker Hub用户名
+   - 修改环境变量（JWT_SECRET、数据库密码等）
+
+4. 设置服务器IP：
+```bash
+echo "SERVER_IP=your-server-ip" > .env
+echo "IMAGE_TAG=v1.0.0" >> .env
+```
+
+5. 启动服务：
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+---
+
+## 方式二：服务器直接构建
+
+### 准备工作
+
+1. 确保服务器已安装以下软件：
+   - Docker (20.10.0+)
+   - Docker Compose (2.0.0+)
+   - Git
+   - 建议4G+内存
+
+2. 克隆项目到服务器：
+```bash
+git clone <your-repository-url>
+cd tblog
+```
+
+### 配置说明
 
 1. 设置服务器IP：
    在服务器上创建 `.env` 文件并添加以下内容：
@@ -28,7 +117,7 @@ cd tblog
      - `JWT_SECRET`: 更改为一个安全的随机字符串
      - `POSTGRES_PASSWORD`: 更改数据库密码
 
-## 部署步骤
+### 部署步骤
 
 1. 启动服务：
 ```bash
@@ -39,6 +128,8 @@ docker-compose up -d
 ```bash
 docker-compose ps
 ```
+
+---
 
 ## 数据库迁移
 
@@ -53,29 +144,27 @@ docker-compose ps
    docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
    ```
 
-   b. 拉取最新代码：
+   b. 更新镜像（如使用预构建镜像）：
    ```bash
-   git pull
+   # 本地构建新版本并推送
+   ./scripts/build-and-push.sh v1.0.1
+   
+   # 服务器更新
+   echo "IMAGE_TAG=v1.0.1" > .env
+   docker-compose -f docker-compose.prod.yml pull
+   docker-compose -f docker-compose.prod.yml up -d
    ```
 
-   c. 执行数据库迁移：
+   或者拉取最新代码重新构建（如直接构建）：
    ```bash
-   # 停止现有服务
+   git pull
    docker-compose down
-
-   # 重新构建并启动服务（包含迁移）
    docker-compose up -d --build
    ```
 
-   d. 检查迁移日志：
+   c. 检查迁移日志：
    ```bash
    docker-compose logs migration
-   ```
-
-   如果迁移失败：
-   ```bash
-   # 还原数据库备份
-   cat backup_$(date +%Y%m%d).sql | docker exec -i tblog-postgres psql -U user -d tblog
    ```
 
 ## 访问说明
@@ -105,7 +194,17 @@ docker-compose logs postgres
 docker-compose logs migration
 ```
 
-2. 更新应用：
+2. 更新应用（预构建镜像方式）：
+```bash
+# 本地构建新镜像
+./scripts/build-and-push.sh v1.0.1
+
+# 服务器更新
+docker-compose -f docker-compose.prod.yml pull
+docker-compose -f docker-compose.prod.yml up -d
+```
+
+3. 更新应用（直接构建方式）：
 ```bash
 # 备份数据库
 docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
@@ -117,12 +216,6 @@ git pull
 docker-compose up -d --build
 ```
 
-3. 数据库备份：
-```bash
-# 创建带时间戳的备份
-docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
-```
-
 ## 故障排除
 
 1. 如果网站无法访问：
@@ -130,33 +223,15 @@ docker exec tblog-postgres pg_dump -U user tblog > backup_$(date +%Y%m%d).sql
    - 检查服务状态：`docker-compose ps`
    - 检查容器日志：`docker-compose logs`
 
-2. 如果数据库连接失败：
+2. 如果镜像拉取失败：
+   - 检查网络连接
+   - 确认镜像名称和标签是否正确
+   - 检查Docker Hub仓库是否公开
+
+3. 如果数据库连接失败：
    - 检查数据库服务是否正常运行
    - 检查数据库连接字符串是否正确
    - 检查数据库日志：`docker-compose logs postgres`
-
-3. 如果数据库迁移失败：
-   - 检查迁移日志：`docker-compose logs migration`
-   - 确保有最新的数据库备份
-   - 如需回滚，使用备份还原数据库
-
-4. 如果Docker构建失败：
-   a. 清理Docker缓存：
-   ```bash
-   docker system prune -a
-   docker volume prune
-   ```
-   
-   b. 重新构建：
-   ```bash
-   docker-compose build --no-cache
-   docker-compose up -d
-   ```
-   
-   c. 如果是webpack错误，检查：
-   - 确保所有依赖都已正确安装
-   - 检查是否有语法错误
-   - 查看构建日志获取详细错误信息
 
 ## 安全建议
 

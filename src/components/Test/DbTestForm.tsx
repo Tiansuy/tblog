@@ -26,7 +26,7 @@ export default function DbTestForm() {
       
       const result = await updateFirstPostTitle(title);
       
-      if (result.success) {
+      if (result.success && result.data) {
         setStatus({
           type: 'success',
           message: `更新成功！原标题: ${result.data.oldTitle} -> 新标题: ${result.data.newTitle}`
@@ -35,10 +35,11 @@ export default function DbTestForm() {
       } else {
         setStatus({
           type: 'error',
-          message: result.error
+          message: result.error || '更新失败'
         });
       }
-    } catch (error) {
+    } catch (err) {
+      console.error('Update failed:', err);
       setStatus({
         type: 'error',
         message: '更新失败，请重试'

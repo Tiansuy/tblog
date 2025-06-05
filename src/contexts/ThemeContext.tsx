@@ -66,6 +66,24 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }
   }, []);
 
+  // 设置主题
+  const setTheme = useCallback((newTheme: Theme) => {
+    setThemeState(newTheme);
+    applyTheme(newTheme);
+    setIsSystemPreference(false);
+    
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+      localStorage.setItem(SYSTEM_PREFERENCE_KEY, 'false');
+    }
+  }, [applyTheme]);
+
+  // 切换主题
+  const toggleTheme = useCallback(() => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+  }, [theme, setTheme]);
+
   // 初始化主题 - 只在首次加载时执行
   useEffect(() => {
     if (typeof window !== 'undefined' && !isInitialized) {
@@ -125,24 +143,6 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       };
     }
   }, [isSystemPreference, applyTheme]);
-
-  // 切换主题
-  const toggleTheme = useCallback(() => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
-    setTheme(newTheme);
-  }, [theme]);
-
-  // 设置主题
-  const setTheme = useCallback((newTheme: Theme) => {
-    setThemeState(newTheme);
-    applyTheme(newTheme);
-    setIsSystemPreference(false);
-    
-    if (typeof window !== 'undefined') {
-      localStorage.setItem(THEME_STORAGE_KEY, newTheme);
-      localStorage.setItem(SYSTEM_PREFERENCE_KEY, 'false');
-    }
-  }, [applyTheme]);
 
   // 启用系统偏好
   const enableSystemPreference = useCallback(() => {

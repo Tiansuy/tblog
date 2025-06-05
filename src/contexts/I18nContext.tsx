@@ -32,6 +32,14 @@ export function I18nProvider({ children }: I18nProviderProps) {
   // 判断是否为RTL语言
   const isRTL = ['ar', 'he', 'fa'].includes(locale);
 
+  // 更新文档语言属性
+  const updateDocumentLang = useCallback((newLocale: Locale) => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.lang = newLocale;
+      document.documentElement.dir = ['ar', 'he', 'fa'].includes(newLocale) ? 'rtl' : 'ltr';
+    }
+  }, []);
+
   // 初始化语言设置
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -49,15 +57,7 @@ export function I18nProvider({ children }: I18nProviderProps) {
         updateDocumentLang(appConfig.i18n.defaultLocale);
       }
     }
-  }, []);
-
-  // 更新文档语言属性
-  const updateDocumentLang = useCallback((newLocale: Locale) => {
-    if (typeof window !== 'undefined') {
-      document.documentElement.lang = newLocale;
-      document.documentElement.dir = ['ar', 'he', 'fa'].includes(newLocale) ? 'rtl' : 'ltr';
-    }
-  }, []);
+  }, [updateDocumentLang]);
 
   // 设置语言
   const setLocale = useCallback((newLocale: Locale) => {
