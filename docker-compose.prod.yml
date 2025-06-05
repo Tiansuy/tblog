@@ -24,7 +24,7 @@ services:
 
   # Next.js Application (使用预构建镜像)
   app:
-    image: your-dockerhub-username/tblog:${IMAGE_TAG:-latest}
+    image: tiansuy/tblog:${IMAGE_TAG:-latest}
     container_name: tblog-app
     environment:
       - NODE_ENV=production
@@ -37,13 +37,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migration:
+        condition: service_completed_successfully
     restart: unless-stopped
 
-  # Database Migration Service (使用预构建镜像)
+  # Database Migration and Seed Service (使用预构建镜像)
   migration:
-    image: your-dockerhub-username/tblog:${IMAGE_TAG:-latest}
+    image: tiansuy/tblog:${IMAGE_TAG:-latest}
     container_name: tblog-migration
-    command: npx prisma migrate deploy
+    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
     environment:
       - DATABASE_URL=postgresql://user:password@postgres:5432/tblog
     networks:

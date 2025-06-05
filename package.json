@@ -10,10 +10,13 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "db:seed": "node scripts/setup-db.js",
+    "db:seed": "tsx prisma/seed.ts",
     "db:reset": "prisma migrate reset",
     "docker:up": "docker-compose up -d",
     "docker:down": "docker-compose down"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.0",
@@ -21,6 +24,7 @@
     "@next/mdx": "^15.3.3",
     "@prisma/client": "^6.9.0",
     "@tailwindcss/typography": "^0.5.16",
+    "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "jsonwebtoken": "^9.0.2",
@@ -33,6 +37,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -41,6 +46,7 @@
     "eslint-config-next": "15.3.3",
     "prisma": "^6.9.0",
     "tailwindcss": "^4",
+    "tsx": "^4.17.0",
     "typescript": "^5"
   }
 }
