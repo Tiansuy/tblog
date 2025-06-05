@@ -21,6 +21,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   # Next.js Application (使用预构建镜像)
   app:
@@ -53,6 +54,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: unless-stopped
 
   # Nginx Reverse Proxy
   nginx:
