@@ -54,7 +54,6 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    restart: unless-stopped
 
   # Nginx Reverse Proxy
   nginx:
