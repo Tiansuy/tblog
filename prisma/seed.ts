@@ -29,8 +29,8 @@ async function main() {
       slug: 'welcome-to-tblog',
       content: '这是一篇示例文章，展示TBlog的基本功能。\n\n## 主要特性\n\n- Next.js 15\n- TypeScript\n- Tailwind CSS\n- PostgreSQL\n- 主题切换\n- 国际化\n\n## 开始使用\n\n现在你可以开始创建自己的文章了！',
       excerpt: '这是一篇示例文章，展示TBlog的基本功能。',
+      filePath: 'welcome-to-tblog.mdx',
       published: true,
-      authorId: adminUser.id,
     },
   });
 

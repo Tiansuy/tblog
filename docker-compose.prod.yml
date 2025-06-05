@@ -41,11 +41,11 @@ services:
         condition: service_completed_successfully
     restart: unless-stopped
 
-  # Database Migration and Seed Service (使用预构建镜像)
+  # Database Migration Service (使用预构建镜像)
   migration:
     image: tiansuy/tblog:${IMAGE_TAG:-latest}
     container_name: tblog-migration
-    command: sh -c "npx prisma migrate deploy && npx prisma db seed"
+    command: npx prisma migrate deploy
     environment:
       - DATABASE_URL=postgresql://user:password@postgres:5432/tblog
     networks:
